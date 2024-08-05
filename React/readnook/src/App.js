@@ -85,6 +85,33 @@ const App = () => {
             Submit
           </button>
         </form>
+        <br/>
+
+        <table className='table table-striped table-bordered tabler-hover'>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author(s)</th>
+              <th>Category</th>
+              <th>Summary</th>
+              <th>Quote(s)</th>
+              <th>ISBN</th>
+            </tr>
+          </thead>
+          <tbody>
+            {booklogs.map(booklog => (
+              <tr key={booklog.id}>
+                <td>{booklog.title}</td>
+                <td>{booklog.authors}</td>
+                <td>{booklog.category}</td>
+                <td>{booklog.summary}</td>
+                <td>{booklog.quotes}</td>
+                <td>{booklog.isbn}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
       </div>
     </div>
   )
