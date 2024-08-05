@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base 
 
-URL_DATABASE = 'SQLITE:///./booknook.db'
+URL_DATABASE = 'sqlite:///./booknook.db'
 
 engine = create_engine(URL_DATABASE, connect_args={"check_same_thread": False})
 
