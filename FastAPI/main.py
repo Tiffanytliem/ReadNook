@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
-from typing import Annotated
+from typing import Annotated, List
 from sqlalchemy.orm import Session
 from pydantic import BaseModel 
 from database import SessionLocal, engine 
@@ -51,3 +51,9 @@ async def create_booklog(booklog: BooklogBase, db: db_dependency):
     db.commit()
     db.refresh(db_booklog)
     return db_booklog
+
+
+@app.get("/booklogs", response_model=List[BooklogModel])
+async def read_transactions(db: db_dependency, skip: int = 0, limit: int = 100):
+    booklogs = db.query(models.Booklog).offset(skip).limit(limit).all()
+    return booklogs
