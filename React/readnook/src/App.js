@@ -52,16 +52,38 @@ const App = () => {
           <h3>READNOOK</h3>
           </a>
         </div>
-
-
       </nav>
       <div className='container'>
         <form onSubmit={handleFormSubmit}>
           <div className='mb-3 mt-3'>
             <label htmlFor='title' className='form-label'>
-              Title
+            Title
             </label>
+            <input type='text' className='form-control' id='title' name='title' onChange={handleInputChange} value={formData.title}/>
+            <br/>
+            <label htmlFor='authors' className='form-label'>
+              Author(s)
+            </label>
+            <input type='text' className='form-control' id='authors' name='authors' onChange={handleInputChange} value={formData.authors}/>
+            <br/>
+            <label htmlFor='category' className='form-label'>
+              Category
+            </label>
+            <input type='text' className='form-control' id='category' name='category' onChange={handleInputChange} value={formData.category}/>
+            <br/>
+            <label htmlFor='summary' className='form-label'>
+              Summary
+            </label>
+            <input type='text' className='form-control' id='summary' name='summary' onChange={handleInputChange} value={formData.summary}/>
+            <br/>
+            <label htmlFor='quotes' className='form-label'>
+              Quotes
+            </label>
+            <input type='text' className='form-control' id='quotes' name='quotes' onChange={handleInputChange} value={formData.quotes}/>
           </div>
+          <button type='submit' className='btn btn-secondary'>
+            Submit
+          </button>
         </form>
       </div>
     </div>
