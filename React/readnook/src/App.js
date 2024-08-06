@@ -1,9 +1,10 @@
-import React, {useState, useEffect} from 'react'
-import api from './api'
+import React, { useState, useEffect } from 'react';
+import api from './api';
 
 const App = () => {
   const [booklogs, setBooklogs] = useState([]);
   const [formData, setFormData] = useState({
+    id: '',
     title: '',
     authors: '',
     category: '',
@@ -11,29 +12,35 @@ const App = () => {
     quotes: '',
     isbn: ''
   });
-  
+  const [editing, setEditing] = useState(false);
+
   const fetchBooklogs = async () => {
     const response = await api.get('/booklogs/');
-    setBooklogs(response.data)
+    setBooklogs(response.data);
   };
 
   useEffect(() => {
-    fetchBooklogs()
+    fetchBooklogs();
   }, []);
 
   const handleInputChange = (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    // const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({
       ...formData,
-      [e.target.name]: value,
-    })
+      // [e.target.name]: value,
+    });
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    await api.post('/booklogs/', formData);
+    if (editing) {
+      await api.put(`/booklogs/${formData.id}`, formData);
+    } else {
+      await api.post('/booklogs/', formData);
+    }
     fetchBooklogs();
     setFormData({
+      id: '',
       title: '',
       authors: '',
       category: '',
@@ -41,7 +48,12 @@ const App = () => {
       quotes: '',
       isbn: ''
     });
+    setEditing(false);
+  };
 
+  const handleEditClick = (booklog) => {
+    setFormData(booklog);
+    setEditing(true);
   };
 
   return (
@@ -49,7 +61,7 @@ const App = () => {
       <nav className='navbar navbar-dark bg-secondary'>
         <div className='container-fluid'>
           <a className='navbar-brand' href="#">
-          <h3>READNOOK</h3>
+            <h3>READNOOK</h3>
           </a>
         </div>
       </nav>
@@ -57,42 +69,41 @@ const App = () => {
         <form onSubmit={handleFormSubmit}>
           <div className='mb-3 mt-3'>
             <label htmlFor='title' className='form-label'>
-            Title
+              Title
             </label>
-            <input type='text' className='form-control' id='title' name='title' onChange={handleInputChange} value={formData.title}/>
-            <br/>
+            <input type='text' className='form-control' id='title' name='title' onChange={handleInputChange} value={formData.title} />
+            <br />
             <label htmlFor='authors' className='form-label'>
               Author(s)
             </label>
-            <input type='text' className='form-control' id='authors' name='authors' onChange={handleInputChange} value={formData.authors}/>
-            <br/>
+            <input type='text' className='form-control' id='authors' name='authors' onChange={handleInputChange} value={formData.authors} />
+            <br />
             <label htmlFor='category' className='form-label'>
               Category
             </label>
-            <input type='text' className='form-control' id='category' name='category' onChange={handleInputChange} value={formData.category}/>
-            <br/>
+            <input type='text' className='form-control' id='category' name='category' onChange={handleInputChange} value={formData.category} />
+            <br />
             <label htmlFor='summary' className='form-label'>
               Summary
             </label>
-            <input type='text' className='form-control' id='summary' name='summary' onChange={handleInputChange} value={formData.summary}/>
-            <br/>
+            <input type='text' className='form-control' id='summary' name='summary' onChange={handleInputChange} value={formData.summary} />
+            <br />
             <label htmlFor='quotes' className='form-label'>
               Quotes
             </label>
-            <input type='text' className='form-control' id='quotes' name='quotes' onChange={handleInputChange} value={formData.quotes}/>
-            <br/>
-            <label htmlFor='quotes' className='form-label'>
+            <input type='text' className='form-control' id='quotes' name='quotes' onChange={handleInputChange} value={formData.quotes} />
+            <br />
+            <label htmlFor='isbn' className='form-label'>
               ISBN
             </label>
-            <input type='text' className='form-control' id='quotes' name='isbn' onChange={handleInputChange} value={formData.isbn}/>
+            <input type='text' className='form-control' id='isbn' name='isbn' onChange={handleInputChange} value={formData.isbn} />
           </div>
           <button type='submit' className='btn btn-secondary'>
-            Submit
+            {editing ? 'Update' : 'Submit'}
           </button>
         </form>
-        <br/>
-
-        <table className='table table-striped table-bordered tabler-hover'>
+        <br />
+        <table className='table table-striped table-bordered table-hover'>
           <thead>
             <tr>
               <th>Title</th>
@@ -101,6 +112,7 @@ const App = () => {
               <th>Summary</th>
               <th>Quote(s)</th>
               <th>ISBN</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -112,15 +124,18 @@ const App = () => {
                 <td>{booklog.summary}</td>
                 <td>{booklog.quotes}</td>
                 <td>{booklog.isbn}</td>
+                <td>
+                  <button onClick={() => handleEditClick(booklog)} className='btn btn-secondary'>
+                    Edit
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-
       </div>
     </div>
-  )
-
-}
+  );
+};
 
 export default App;
