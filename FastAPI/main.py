@@ -61,6 +61,20 @@ async def read_booklogs(db: db_dependency, skip: int = 0, limit: int = 100):
     booklogs = db.query(models.Booklog).offset(skip).limit(limit).all()
     return booklogs
 
+@app.put("/booklogs/{booklog_id}", response_model=BooklogModel)
+async def update_booklog(booklog_id: int, booklog: BooklogBase, db: Session = Depends(get_db)):
+    db_booklog = db.query(models.Booklog).filter(models.Booklog.id == booklog_id).first()
+    
+    if db_booklog is None:
+        raise HTTPException(status_code=404, detail="Booklog not found")
+    
+    for key, value in booklog.dict().items():
+        setattr(db_booklog, key, value)
+    
+    db.commit()
+    db.refresh(db_booklog)
+    return db_booklog
+
 @app.delete("/booklogs/{booklog_id}", response_model=BooklogModel)
 async def delete_booklog(booklog_id: int, db: Session = Depends(get_db)):
     db_booklog = db.query(models.Booklog).filter(models.Booklog.id == booklog_id).first()
@@ -69,3 +83,6 @@ async def delete_booklog(booklog_id: int, db: Session = Depends(get_db)):
     db.delete(db_booklog)
     db.commit()
     return db_booklog
+
+
+
