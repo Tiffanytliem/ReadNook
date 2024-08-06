@@ -9,12 +9,15 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    'http://localhost:3000'
+    'http://localhost:3000',
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
 )
 
 class BooklogBase(BaseModel):
@@ -45,7 +48,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 models.Base.metadata.create_all(bind=engine)
 
 @app.post("/booklogs/", response_model=BooklogModel)
-async def create_booklog(booklog: BooklogBase, db: db_dependency):
+async def create_booklogs(booklog: BooklogBase, db: db_dependency):
     db_booklog = models.Booklog(**booklog.dict())
     db.add(db_booklog)
     db.commit()
@@ -53,7 +56,16 @@ async def create_booklog(booklog: BooklogBase, db: db_dependency):
     return db_booklog
 
 
-@app.get("/booklogs", response_model=List[BooklogModel])
-async def read_transactions(db: db_dependency, skip: int = 0, limit: int = 100):
+@app.get("/booklogs/", response_model=List[BooklogModel])
+async def read_booklogs(db: db_dependency, skip: int = 0, limit: int = 100):
     booklogs = db.query(models.Booklog).offset(skip).limit(limit).all()
     return booklogs
+
+@app.delete("/booklogs/{booklog_id}", response_model=BooklogModel)
+async def delete_booklog(booklog_id: int, db: Session = Depends(get_db)):
+    db_booklog = db.query(models.Booklog).filter(models.Booklog.id == booklog_id).first()
+    if db_booklog is None:
+        raise HTTPException(status_code=404, detail="Booklog not found")
+    db.delete(db_booklog)
+    db.commit()
+    return db_booklog

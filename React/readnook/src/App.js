@@ -80,6 +80,11 @@ const App = () => {
               Quotes
             </label>
             <input type='text' className='form-control' id='quotes' name='quotes' onChange={handleInputChange} value={formData.quotes}/>
+            <br/>
+            <label htmlFor='quotes' className='form-label'>
+              ISBN
+            </label>
+            <input type='text' className='form-control' id='quotes' name='isbn' onChange={handleInputChange} value={formData.isbn}/>
           </div>
           <button type='submit' className='btn btn-secondary'>
             Submit
