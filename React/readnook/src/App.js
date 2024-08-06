@@ -24,10 +24,10 @@ const App = () => {
   }, []);
 
   const handleInputChange = (e) => {
-    // const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value = e.target.value;
     setFormData({
       ...formData,
-      // [e.target.name]: value,
+      [e.target.name]: value,
     });
   };
 
@@ -54,6 +54,13 @@ const App = () => {
   const handleEditClick = (booklog) => {
     setFormData(booklog);
     setEditing(true);
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm("Are you sure you want to delete this booklog?")) {
+      await api.delete(`/booklogs/${id}`);
+      fetchBooklogs();
+    }
   };
 
   return (
@@ -125,9 +132,21 @@ const App = () => {
                 <td>{booklog.quotes}</td>
                 <td>{booklog.isbn}</td>
                 <td>
-                  <button onClick={() => handleEditClick(booklog)} className='btn btn-secondary'>
+                <span 
+                    onClick={() => handleEditClick(booklog)} 
+                    className='text-secondary text-decoration-underline me-3' 
+                    style={{ cursor: 'pointer' }}
+                  >
                     Edit
-                  </button>
+                  </span>
+                  <br/>
+                  <span 
+                    onClick={() => handleDeleteClick(booklog.id)} 
+                    className='text-danger text-decoration-underline' 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Delete
+                  </span>
                 </td>
               </tr>
             ))}
